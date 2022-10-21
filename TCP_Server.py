@@ -1,5 +1,5 @@
 import socket
-import os
+
 
 raspberryPIP = "10.108.41.143"
 laptopIP = "10.104.147.105"
@@ -24,9 +24,16 @@ except OSError:
     mySock.close()
     s.shutdown(socket.SHUT_RDWR)
 
+file = open("recievedFile.txt")
 while(True):
     received = mySock.recv(BUFFER_SIZE).decode()
-    print(received)
-    print("\n\n\n SPACER \n\n\n")
+    
+    if not received:
+        break
 
+    file.write(received)
+    
 
+mySock.close()
+s.close()
+file.close()
