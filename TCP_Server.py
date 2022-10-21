@@ -24,7 +24,7 @@ except OSError:
     mySock.close()
     s.shutdown(socket.SHUT_RDWR)
 
-file = open("recievedFile.txt")
+file = open("receivedFile.txt")
 while(True):
     received = mySock.recv(BUFFER_SIZE).decode()
     
