@@ -6,12 +6,8 @@ laptopIP = "10.104.147.105"
 
 port = 50001
 s = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-s.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
-backlog = 1
-
 
 s.bind((raspberryPIP,50001))
-s.listen(backlog)
 
 BUFFER_SIZE = 8192
 
