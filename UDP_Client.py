@@ -1,3 +1,4 @@
+from re import S
 import socket
 
 try:
@@ -7,7 +8,7 @@ except ImportError:
     print("tdqm not avaialable. No Progress bars for you :(")
     progBarUsable = 0
 
-filename = "fileToSend.txt"
+filename = "fileToSendUDP.txt"
 file = open(filename)
 
 #Reading Size of file
@@ -26,37 +27,34 @@ BUFFER_SIZE = 8192
 if(progBarUsable):
     progress = tqdm.tqdm(range(int(filesize,base=16)), f"Sending {filename}", unit="B", unit_scale=True, unit_divisor=1024)
 
-#Set up client and connect to server
-desktopIP = "10.108.41.143"
+#Set up client
+raspberryPIP = "10.108.41.143"
 laptopIP = "10.104.147.105"
-s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+port = 50001
+s = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 s.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
-backlog = 1
-mySock = s.connect((desktopIP,50001))#The server
+
+s.sendto(filesize.encode("UTF-8"), (raspberryPIP, port))
 
 #Transfer data and update progress bar
-s.sendall(filesize.encode("UTF-8"))
+s.sendto(filesize.encode("UTF-8"), (raspberryPIP, port))
 progress.update(4)
-s.sendall(fileTitle.encode("UTF-8"))
+s.sendto(filename.encode("UTF-8"), (raspberryPIP, port))
 progress.update(20)
 
 
 while True:
-        # read the bytes from the file
         bytes_read = file.read(BUFFER_SIZE)
         if(progBarUsable):
             progress.update(len(bytes_read))
         if not bytes_read:
-            # file transmitting is done
             break
-        # we use sendall to assure transimission in 
-        # busy networks
-        s.sendall(bytes_read.encode("UTF-8"))
+        s.sendto(bytes_read.encode("UTF-8"), (raspberryPIP, port))
         # update the progress bar
         
 
 print("Transmission Complete!")
-mySock.close()
+
 s.close()
 progress.close()
 file.close()
