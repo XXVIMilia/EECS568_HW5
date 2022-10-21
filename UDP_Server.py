@@ -5,7 +5,7 @@ raspberryPIP = "10.108.41.143"
 laptopIP = "10.104.147.105"
 
 port = 50001
-s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+s = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 s.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
 backlog = 1
 
