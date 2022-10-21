@@ -1,4 +1,5 @@
 import socket
+import sys
 
 try:
     import tqdm
@@ -6,6 +7,18 @@ try:
 except ImportError:
     print("tdqm not avaialable. No Progress bars for you :(")
     progBarUsable = 0
+
+if(len(sys.argv) == 1):
+    filename = "fileToSend.txt"
+    raspberryPIP = "10.108.41.143"
+    laptopIP = "10.104.147.105"
+    port = 50001
+else:
+    filename = sys.argv[3]
+    raspberryPIP = sys.argv[1]
+    port = sys.argv[2]
+    laptopIP = "10.104.147.105"
+
 
 filename = "fileToSend.txt"
 file = open(filename)
@@ -27,12 +40,10 @@ if(progBarUsable):
     progress = tqdm.tqdm(range(int(filesize,base=16)), f"Sending {filename}", unit="B", unit_scale=True, unit_divisor=1024)
 
 #Set up client and connect to server
-desktopIP = "10.108.41.143"
-laptopIP = "10.104.147.105"
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 s.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
 backlog = 1
-mySock = s.connect((desktopIP,50001))#The server
+mySock = s.connect((raspberryPIP,port))#The server
 
 #Transfer data and update progress bar
 s.sendall(filesize.encode("UTF-8"))

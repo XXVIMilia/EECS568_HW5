@@ -1,5 +1,5 @@
-from re import S
 import socket
+import sys
 
 try:
     import tqdm
@@ -8,7 +8,18 @@ except ImportError:
     print("tdqm not avaialable. No Progress bars for you :(")
     progBarUsable = 0
 
-filename = "fileToSendUDP.txt"
+if(len(sys.argv) == 1):
+    filename = "fileToSend.txt"
+    raspberryPIP = "10.108.41.143"
+    laptopIP = "10.104.147.105"
+    port = 50001
+else:
+    filename = sys.argv[3]
+    raspberryPIP = sys.argv[1]
+    port = sys.argv[2]
+    laptopIP = "10.104.147.105"
+
+
 file = open(filename)
 
 #Reading Size of file
@@ -23,24 +34,21 @@ print("Sending:",fileTitle)
 
 BUFFER_SIZE = 8192
 
-#Create Progress Bar, if able to
+# #Create Progress Bar, if able to
 if(progBarUsable):
     progress = tqdm.tqdm(range(int(filesize,base=16)), f"Sending {filename}", unit="B", unit_scale=True, unit_divisor=1024)
 
 #Set up client
-raspberryPIP = "10.108.41.143"
-laptopIP = "10.104.147.105"
 port = 50001
 s = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 s.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
 
-s.sendto(filesize.encode("UTF-8"), (raspberryPIP, port))
 
 #Transfer data and update progress bar
 s.sendto(filesize.encode("UTF-8"), (raspberryPIP, port))
-progress.update(4)
-s.sendto(filename.encode("UTF-8"), (raspberryPIP, port))
-progress.update(20)
+# progress.update(4)
+s.sendto(fileTitle.encode("UTF-8"), (raspberryPIP, port))
+# progress.update(20)
 
 
 while True:
@@ -53,8 +61,7 @@ while True:
         # update the progress bar
         
 
-print("Transmission Complete!")
-
+s.sendto("eof".encode("UTF-8"), (raspberryPIP, port))
 s.close()
 progress.close()
 file.close()
